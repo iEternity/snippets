@@ -23,6 +23,7 @@ public:
 	void start(int numThreads);
 	void stop();
 	void run(const Task& task);
+	void run(Task&& task);
 	
 private:
 	void runInThread();

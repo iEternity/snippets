@@ -1,3 +1,6 @@
+#include <exception>
+#include <stdio.h>
+#include <stdlib.h>
 #include "ThreadPool.h"
 
 ThreadPool::ThreadPool(const std::string& name) :
@@ -60,15 +63,46 @@ void ThreadPool::run(const Task& task)
 	}
 }
 
+void ThreadPool::run(Task&& task)
+{
+	if(threads_.empty())
+	{
+		task();
+	}
+	else
+	{
+		MutexLockGuard lock(mutex_);
+		while(isFull())
+		{
+			notFull_.wait(lock);
+		}
+		queue_.push_back(std::move(task))
+		notEmpty_.notify_one();
+	}
+}
+
 void ThreadPool::runInThread()
 {
-	while (running_)
-	{
-		Task task = take();
-		if (task)
+	try{
+		while (running_)
 		{
-			task();
+			Task task = take();
+			if (task)
+			{
+				task();
+			}
 		}
+	}
+	catch(const std::exception& ex)
+	{
+		fprintf(stderr, "exception caught in ThreadPool %s\n", name_.data());
+		fprintf(stderr, "reason: %s\n", ex.what());
+		abort();
+	}
+	catch(...)
+	{
+		fprintf(stderr, "Unknown exception caught in ThreadPool %s\n", name_.data());
+		throw;
 	}
 }
 
