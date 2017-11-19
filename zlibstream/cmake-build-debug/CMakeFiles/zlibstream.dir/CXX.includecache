@@ -1,0 +1,20 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/zhangkuo/CoolCode/snippets/zlibstream/main.cpp
+iostream
+-
+stdio.h
+-
+zlib.h
+-
+assert.h
+-
+string.h
+-
+

@@ -1,0 +1,3 @@
+/home/zhangkuo/CoolCode/snippets/zlibstream/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+/home/zhangkuo/CoolCode/snippets/zlibstream/cmake-build-debug/CMakeFiles/edit_cache.dir
+/home/zhangkuo/CoolCode/snippets/zlibstream/cmake-build-debug/CMakeFiles/zlibstream.dir

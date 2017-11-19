@@ -1,0 +1,1 @@
+/usr/bin/c++   -g   CMakeFiles/zlib.dir/main.cpp.o  -o zlib -lz 
