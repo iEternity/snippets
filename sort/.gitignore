@@ -4,3 +4,4 @@ sort/Debug/
 sort/Release/
 *.sdf
 *.suo
+sort/TestData/output/
