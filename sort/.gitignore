@@ -1,0 +1,7 @@
+Debug/
+Release/
+sort/Debug/
+sort/Release/
+sort/TestData/
+*.sdf
+*.suo
