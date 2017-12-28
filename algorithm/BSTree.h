@@ -58,16 +58,25 @@ public:
     //节点最大距离
     int maxDistance() const
     {
-
+        return maxDistance(root_);
     }
 
     //最大路径和
     int maxPathSum() const
     {
+        if(root_ == nullptr) return 0;
 
+        int maxSum = root_->value;
+        maxPathSum(root_, maxSum);
+
+        return maxSum;
     }
 
     //翻转二叉树
+    void invert()
+    {
+        invert(root_);
+    }
 
     void print() const
     {
@@ -76,56 +85,56 @@ public:
 
 private:
     //递归插入
-    Node* insert(Node* p, int val)
+    Node* insert(Node* root, int val)
     {
-        if(p == nullptr)
+        if(root == nullptr)
         {
-            p = new Node(val);
+            root = new Node(val);
         }
-        else if(val < p->value )
+        else if(val < root->value )
         {
-            insert(p->left, val);
+            insert(root->left, val);
         }
-        else if(val > p->value)
+        else if(val > root->value)
         {
-            insert(p->right, val);
+            insert(root->right, val);
         }
 
-        return p;
+        return root;
     }
 
     //递归删除
-    bool remove(Node* p, int val)
+    bool remove(Node* root, int val)
     {
-        if(p == nullptr) return false;
+        if(root == nullptr) return false;
 
         //等于当前节点的值,则删除该节点
-        if(val == p->value)
+        if(val == root->value)
         {
             //无左右孩子节点
-            if(p->left == nullptr && p->right == nullptr)
+            if(root->left == nullptr && root->right == nullptr)
             {
-                delete p;
-                p = nullptr;
+                delete root;
+                root = nullptr;
             }
             //无左子节点
-            else if(p->left == nullptr)
+            else if(root->left == nullptr)
             {
-                Node* t = p->right;
-                p->value = t->value;
-                p->left = t->left;
-                p->right = t->right;
+                Node* t = root->right;
+                root->value = t->value;
+                root->left = t->left;
+                root->right = t->right;
 
                 delete t;
                 t = nullptr;
             }
             //无右子节点
-            else if(p->right == nullptr)
+            else if(root->right == nullptr)
             {
-                Node* t = p->left;
-                p->value = t->value;
-                p->left = t->left;
-                p->right = t->right;
+                Node* t = root->left;
+                root->value = t->value;
+                root->left = t->left;
+                root->right = t->right;
 
                 delete t;
                 t = nullptr;
@@ -134,8 +143,8 @@ private:
             else
             {
                 //找到左边值最大的节点
-                Node* cur = p->left;
-                Node* parent = p;
+                Node* cur = root->left;
+                Node* parent = root;
                 while(cur->right)
                 {
                     parent = cur;
@@ -145,7 +154,7 @@ private:
                 //若找到的节点是叶子节点
                 if(cur->left == nullptr)
                 {
-                    p->value = cur->value;
+                    root->value = cur->value;
                     delete cur;
                     cur = nullptr;
                 }
@@ -171,63 +180,108 @@ private:
             return true;
         }
         //小于当前节点的值，从左边查找
-        else if(val < p->value)
+        else if(val < root->value)
         {
-            return remove(p->left, val);
+            return remove(root->left, val);
         }
         //大于当前节点的值，从右边查找
         else
         {
-            return remove(p->right, val);
+            return remove(root->right, val);
         }
     }
 
     //递归查找
-    bool find(Node* p, int val) const
+    bool find(Node* root, int val) const
     {
-        if(p == nullptr) return false;
+        if(root == nullptr) return false;
 
-        if(val < p->value)
+        if(val < root->value)
         {
-            return find(p->left, val);
+            return find(root->left, val);
         }
-        else if(val > p->value)
+        else if(val > root->value)
         {
-            return find(p->right, val);
+            return find(root->right, val);
         }
-        else if(val == p->value)
+        else if(val == root->value)
         {
             return true;
         }
     }
 
     //递归遍历统计个数
-    void size(Node* p, int& count) const
+    void size(Node* root, int& count) const
     {
-        if(p == nullptr) return ;
+        if(root == nullptr) return ;
         count++;
-        size(p->left, count);
-        size(p->right, count);
+        size(root->left, count);
+        size(root->right, count);
     }
 
     //递归遍历统计树的高度
-    int height(Node* p) const
+    int height(Node* root) const
     {
-        if(p == nullptr) return 0;
+        if(root == nullptr) return 0;
 
-        return std::max(height(p->left), height(p->right)) + 1;
+        return std::max(height(root->left), height(root->right)) + 1;
+    }
+
+    int maxDistance(Node* root) const
+    {
+        if(root == nullptr) return 0;
+
+        int leftDistance = maxDistance(root->left);
+        int rightDistance = maxDistance(root->right);
+
+        int leftHeight = height(root->left);
+        int rightHeight = height(root->right);
+
+        return std::max(std::max(leftDistance, rightDistance), leftHeight + rightHeight);
+    }
+
+    //返回以root为终点的单路径最大和
+    int maxPathSum(Node* root, int& maxSum) const
+    {
+        if(root == nullptr) return 0;
+
+        int leftSum = maxPathSum(root->left);
+        if(leftSum < 0) leftSum = 0;
+
+        int rightSum = maxPathSum(root->right);
+        if(rightSum < 0) rightSum = 0;
+
+        if(leftSum + rightSum + root->value > maxSum)
+        {
+            maxSum = leftSum + rightSum + root->value;
+        }
+
+        return std::max(leftSum, rightSum) + root->value;
+    }
+
+    //先序遍历二叉树交换左右子节点
+    void invert(Node* root)
+    {
+        if(root == nullptr) return;
+
+        Node* t = root->left;
+        root->left = root->right;
+        root->right = t;
+
+        invert(root->left);
+        invert(root->right);
     }
 
     //中序遍历打印所有节点数据
-    void print(Node* p) const
+    void print(Node* root) const
     {
-        if(p == nullptr) return;
+        if(root == nullptr) return;
 
-        print(p->left);
+        print(root->left);
 
-        std::cout << p->value << std::endl;
+        std::cout << root->value << std::endl;
 
-        print(p->right);
+        print(root->right);
     }
 private:
     Node* root_;
